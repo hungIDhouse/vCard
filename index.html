@@ -255,12 +255,39 @@
             document.getElementById('cardInner').classList.toggle('is-flipped');
         }
 
-        // --- HÀM LƯU CONTACT: DIRECT DATA URI STRATEGY ---
-        // Cách này hoạt động bằng cách ép trình duyệt điều hướng thẳng tới chuỗi mã hóa vCard
-        // Thay vì tải file, OS sẽ nhận diện MIME type và mở App Danh bạ.
+        // --- HÀM LƯU CONTACT: CHIẾN THUẬT HYBRID ---
         function saveContact(event) {
             event.stopPropagation();
+            
+            // 1. Kiểm tra nếu là Android
+            const isAndroid = /Android/i.test(navigator.userAgent);
 
+            if (isAndroid) {
+                // CHIẾN THUẬT CHO ANDROID: Dùng Intent Scheme
+                // Cách này mở thẳng giao diện "Thêm liên hệ" của Android mà không cần tải file.
+                
+                const fullName = `${cardData.firstName} ${cardData.lastName}`;
+                
+                // Xây dựng Intent URL
+                // S.xxx là các String Extra để điền sẵn thông tin vào form
+                const intentUrl = `intent://addcontact#Intent;` +
+                    `action=android.intent.action.INSERT;` +
+                    `type=vnd.android.cursor.dir/contact;` +
+                    `S.name=${encodeURIComponent(fullName)};` +
+                    `S.phone=${encodeURIComponent(cardData.phone)};` +
+                    `S.email=${encodeURIComponent(cardData.email)};` +
+                    `S.company=${encodeURIComponent(cardData.company)};` +
+                    `S.job_title=${encodeURIComponent(cardData.role)};` +
+                    `S.postal=${encodeURIComponent(cardData.address)};` +
+                    `end`;
+
+                // Mở Intent
+                window.location.href = intentUrl;
+                return;
+            }
+
+            // 2. CHIẾN THUẬT CHO IOS / DESKTOP (Vẫn dùng Data URI như cũ)
+            // iOS thường xử lý tốt data:text/vcard
             const vCardData = [
                 'BEGIN:VCARD', 'VERSION:3.0',
                 `N:${cardData.lastName};${cardData.firstName};;;`,
@@ -277,20 +304,11 @@
             ].join('\n');
 
             const encoded = encodeURIComponent(vCardData);
-
-            // Data URL → THẮNG LUÔN CHO CẢ ANDROID + IOS
-            // Sử dụng charset=utf-8 để đảm bảo hiển thị đúng tiếng Việt
             const url = `data:text/vcard;charset=utf-8,${encoded}`;
-
-            // Tạo link và kích hoạt click
+            
             const link = document.createElement('a');
             link.href = url;
-
-            // QUAN TRỌNG: Không đặt thuộc tính download. 
-            // Đặt target="_self" để trình duyệt coi đây là hành động chuyển trang nội bộ,
-            // từ đó kích hoạt bộ xử lý định dạng của hệ điều hành.
             link.setAttribute('target', '_self');
-
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
