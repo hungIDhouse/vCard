@@ -115,19 +115,18 @@
 
                 <!-- Grid thông tin -->
                 <div class="grid grid-cols-2 gap-x-3 gap-y-4 px-1 text-left">
-                    <!-- Phone: Click để gọi -->
+                    <!-- Phone -->
                     <div class="flex items-center space-x-2 group cursor-pointer" onclick="event.stopPropagation(); document.getElementById('link-phone').click();">
                         <div class="w-7 h-7 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-100 transition">
                             <svg class="w-3.5 h-3.5 text-gray-600 group-hover:text-blue-600 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
                         </div>
                         <div class="overflow-hidden">
                             <p class="text-[8px] text-gray-400 font-bold uppercase">Mobile</p>
-                            <!-- Thêm onclick stopPropagation để không bị lật thẻ -->
                             <a id="link-phone" href="#" onclick="event.stopPropagation()" class="text-[11px] font-semibold text-gray-800 truncate block group-hover:text-cyan-600 transition">...</a>
                         </div>
                     </div>
 
-                    <!-- Website: Click mở tab mới -->
+                    <!-- Website -->
                     <div class="flex items-center space-x-2 group cursor-pointer" onclick="event.stopPropagation(); document.getElementById('link-website').click();">
                         <div class="w-7 h-7 rounded-full bg-lime-50 flex items-center justify-center flex-shrink-0 group-hover:bg-lime-100 transition">
                             <svg class="w-3.5 h-3.5 text-gray-600 group-hover:text-lime-600 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
@@ -138,7 +137,7 @@
                         </div>
                     </div>
 
-                    <!-- Email: Click mở mail -->
+                    <!-- Email -->
                     <div class="flex items-center space-x-2 group cursor-pointer" onclick="event.stopPropagation(); document.getElementById('link-email').click();">
                         <div class="w-7 h-7 rounded-full bg-yellow-50 flex items-center justify-center flex-shrink-0 group-hover:bg-yellow-100 transition">
                             <svg class="w-3.5 h-3.5 text-gray-600 group-hover:text-yellow-600 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
@@ -149,14 +148,13 @@
                         </div>
                     </div>
 
-                    <!-- Address: Click mở Google Maps (Thay đổi thành thẻ a) -->
+                    <!-- Address -->
                     <div class="flex items-center space-x-2 group cursor-pointer" onclick="event.stopPropagation(); document.getElementById('link-address').click();">
                         <div class="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 group-hover:bg-gray-200 transition">
                             <svg class="w-3.5 h-3.5 text-gray-600 group-hover:text-red-500 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                         </div>
                         <div class="overflow-hidden">
                             <p class="text-[8px] text-gray-400 font-bold uppercase">Office</p>
-                            <!-- Chuyển từ p sang a và thêm logic Google Maps -->
                             <a id="link-address" href="#" target="_blank" onclick="event.stopPropagation()" class="text-[11px] font-semibold text-gray-800 truncate block leading-tight group-hover:text-cyan-600 transition">...</a>
                         </div>
                     </div>
@@ -165,29 +163,26 @@
                 <!-- Footer: Socials -->
                 <div class="mt-auto flex items-end justify-between px-1 pt-2">
                     <div class="flex space-x-3 text-gray-500">
-                        <!-- Linkedin -->
                         <a id="btn-linkedin" href="#" target="_blank" onclick="event.stopPropagation()" class="hover:text-blue-600 transition-colors" title="LinkedIn">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"></path><circle cx="4" cy="4" r="2"></circle></svg>
                         </a>
-                        
-                        <!-- Facebook -->
                         <a id="btn-facebook" href="#" target="_blank" onclick="event.stopPropagation()" class="hover:text-blue-500 transition-colors" title="Facebook">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"></path></svg>
                         </a>
-
-                        <!-- Instagram -->
                         <a id="btn-instagram" href="#" target="_blank" onclick="event.stopPropagation()" class="hover:text-pink-600 transition-colors" title="Instagram">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5" stroke-width="2"></rect><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z" stroke-width="2"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" stroke-width="2"></line></svg>
                         </a>
                     </div>
                     
-                    <button onclick="saveContact(event)" class="bg-gray-900 text-white px-3 py-1.5 rounded text-[10px] font-medium flex items-center space-x-1.5 hover:bg-black transition-colors shadow-lg active:scale-95 transform">
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                        <span>Save Contact</span>
-                    </button>
+                    <!-- Nút Save Contact -->
+                    <div class="flex flex-col items-end">
+                        <button onclick="saveContact(event)" class="bg-gray-900 text-white px-3 py-1.5 rounded text-[10px] font-medium flex items-center space-x-1.5 hover:bg-black transition-colors shadow-lg active:scale-95 transform">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                            <span>Save Contact</span>
+                        </button>
+                    </div>
                 </div>
 
-                <!-- Thanh màu trang trí -->
                 <div class="h-2.5 w-full flex absolute bottom-0 left-0 right-0 rounded-b-sm overflow-hidden">
                     <div class="h-full w-1/3 bg-yellow-400"></div>
                     <div class="h-full w-1/3 bg-lime-400"></div>
@@ -197,7 +192,7 @@
         </div>
     </div>
 
-    <!-- PHẦN HƯỚNG DẪN MỚI -->
+    <!-- Hướng dẫn -->
     <div class="mt-12 mb-10 z-10 pointer-events-none select-none text-center">
         <p class="instruct-text text-gray-400 text-[11px] font-bold tracking-[0.3em] uppercase">
             Tap to Flip
@@ -205,12 +200,11 @@
     </div>
     
     <div class="text-gray-400 text-xs">
-        <p>© 2025 Designed by ID COMMUNICATION GROUP</p>
+        <p>© 2025 Designed by You</p>
     </div>
 
     <!-- SCRIPT LOGIC -->
     <script>
-        // --- DỮ LIỆU CÁ NHÂN ---
         const cardData = {
             firstName: "Hùng",
             lastName: "Nguyễn Hữu",
@@ -227,77 +221,95 @@
                 instagram: "https://www.instagram.com/your-profile"
             }
         };
-
-        // --- Hiển thị dữ liệu ---
         document.addEventListener('DOMContentLoaded', () => {
             const fullName = `${cardData.firstName} ${cardData.lastName}`;
-            const avatarSrc = cardData.avatarUrl 
-                ? cardData.avatarUrl 
-                : `https://ui-avatars.com/api/?name=${fullName.replace(' ', '+')}&background=f3f4f6&color=333&size=128&bold=true`;
+            const avatarSrc = cardData.avatarUrl ? cardData.avatarUrl : `https://ui-avatars.com/api/?name=${fullName.replace(' ', '+')}&background=f3f4f6&color=333&size=128&bold=true`;
 
             document.getElementById('avatar').src = avatarSrc;
             document.getElementById('display-name').textContent = fullName;
             document.getElementById('display-role').textContent = cardData.role;
             document.getElementById('display-company').textContent = cardData.company;
-            
             document.getElementById('back-name').textContent = fullName;
             document.getElementById('back-role').textContent = cardData.role;
             
-            // Xử lý PHONE
             document.getElementById('link-phone').textContent = cardData.phone;
-            document.getElementById('link-phone').href = `tel:${cardData.phone.replace(/\s+/g, '')}`; // Xóa khoảng trắng để gọi được
+            document.getElementById('link-phone').href = `tel:${cardData.phone.replace(/\s+/g, '')}`;
             
-            // Xử lý WEBSITE
             document.getElementById('link-website').textContent = cardData.website;
             document.getElementById('link-website').href = `https://${cardData.website}`;
             
-            // Xử lý EMAIL
             document.getElementById('link-email').textContent = cardData.email;
             document.getElementById('link-email').href = `mailto:${cardData.email}`;
             
-            // Xử lý ADDRESS (MỚI)
-            const addressElement = document.getElementById('link-address'); // Đã đổi ID từ display-address sang link-address
+            const addressElement = document.getElementById('link-address');
             addressElement.textContent = cardData.address;
-            // Tạo link Google Maps
-            const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(cardData.address)}`;
-            addressElement.href = mapsUrl;
+            addressElement.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(cardData.address)}`;
 
-            // --- Gán Link Social Media ---
             document.getElementById('btn-linkedin').href = cardData.socials.linkedin;
             document.getElementById('btn-facebook').href = cardData.socials.facebook;
             document.getElementById('btn-instagram').href = cardData.socials.instagram;
         });
 
-        // --- Lật Thẻ ---
         function toggleFlip() {
             document.getElementById('cardInner').classList.toggle('is-flipped');
         }
 
-        // --- Lưu Danh Bạ ---
-        function saveContact(event) {
+        // --- HÀM LƯU CONTACT ĐÃ NÂNG CẤP CHO IPHONE ---
+        async function saveContact(event) {
             event.stopPropagation();
+            
+            // 1. Tạo nội dung vCard
             const vCardData = [
                 'BEGIN:VCARD', 'VERSION:3.0',
-                `N:${cardData.lastName};${cardData.firstName};;;`,
-                `FN:${cardData.firstName} ${cardData.lastName}`,
-                `ORG:${cardData.company}`,
-                `TITLE:${cardData.role}`,
+                `N;CHARSET=UTF-8:${cardData.lastName};${cardData.firstName};;;`,
+                `FN;CHARSET=UTF-8:${cardData.firstName} ${cardData.lastName}`,
+                `ORG;CHARSET=UTF-8:${cardData.company}`,
+                `TITLE;CHARSET=UTF-8:${cardData.role}`,
                 `TEL;TYPE=CELL:${cardData.phone}`,
                 `EMAIL;TYPE=WORK,INTERNET:${cardData.email}`,
                 `URL:${cardData.website}`,
-                `ADR;TYPE=WORK:;;${cardData.address}`,
+                `ADR;TYPE=WORK;CHARSET=UTF-8:;;${cardData.address}`,
                 `X-SOCIALPROFILE;type=linkedin:${cardData.socials.linkedin}`,
                 `X-SOCIALPROFILE;type=facebook:${cardData.socials.facebook}`,
                 'END:VCARD'
             ].join('\n');
 
+            const fileName = `${cardData.firstName.replace(/\s/g, '_')}_${cardData.lastName.replace(/\s/g, '_')}.vcf`;
+            
+            // 2. Kiểm tra xem trình duyệt có hỗ trợ Chia sẻ file không (Mobile thường có)
+            if (navigator.share && navigator.canShare) {
+                try {
+                    // Tạo file ảo
+                    const file = new File([vCardData], fileName, { type: 'text/vcard' });
+                    
+                    // Kiểm tra xem thiết bị cho phép chia sẻ file này không
+                    if (navigator.canShare({ files: [file] })) {
+                        await navigator.share({
+                            files: [file],
+                            title: 'Lưu Danh Bạ',
+                            text: 'Chọn "Danh bạ" (Contacts) để lưu ngay.',
+                        });
+                        return; // Nếu chia sẻ thành công thì dừng ở đây
+                    }
+                } catch (err) {
+                    console.log('Chia sẻ thất bại hoặc bị hủy, chuyển sang tải file thường.', err);
+                }
+            }
+
+            // 3. FALLBACK: Nếu là máy tính hoặc thiết bị không hỗ trợ share file
             const blob = new Blob([vCardData], { type: 'text/vcard;charset=utf-8' });
             const link = document.createElement('a');
             link.href = window.URL.createObjectURL(blob);
-            link.download = `${cardData.firstName}_${cardData.lastName}.vcf`;
+            link.download = fileName;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+            
+            // Nhắc nhở người dùng iOS nếu fallback xảy ra
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            if (isIOS) {
+                alert("File đã được tải về. Hãy mở ứng dụng 'Tệp' (Files) và bấm vào file vừa tải để lưu vào danh bạ.");
+            }
         }
     </script>
 </body>
