@@ -255,17 +255,44 @@
             document.getElementById('cardInner').classList.toggle('is-flipped');
         }
 
-        // --- HÀM LƯU CONTACT: UNIVERSAL SILENT INTENT (FIX PLAY STORE BUG) ---
+        // --- HÀM LƯU CONTACT: GOOGLE CONTACTS TARGETING ---
         function saveContact(event) {
             event.stopPropagation();
             
             const isAndroid = /Android/i.test(navigator.userAgent);
             const fullName = `${cardData.firstName} ${cardData.lastName}`;
 
-            if (isAndroid) {
-                // UNIVERSAL INTENT: KHÔNG dùng package để tránh lỗi "Not Found" trên Pixel/Samsung
-                // KHÔNG dùng Alert để đảm bảo User Gesture
+            // Hàm tạo file vCard dự phòng
+            const downloadVCard = () => {
+                const vCardData = [
+                    'BEGIN:VCARD', 'VERSION:3.0',
+                    `N:${cardData.lastName};${cardData.firstName};;;`,
+                    `FN:${cardData.firstName} ${cardData.lastName}`,
+                    `ORG:${cardData.company}`,
+                    `TITLE:${cardData.role}`,
+                    `TEL;TYPE=CELL:${cardData.phone}`,
+                    `EMAIL;TYPE=WORK,INTERNET:${cardData.email}`,
+                    `URL:${cardData.website}`,
+                    `ADR;TYPE=WORK:;;${cardData.address}`,
+                    `X-SOCIALPROFILE;type=linkedin:${cardData.socials.linkedin}`,
+                    `X-SOCIALPROFILE;type=facebook:${cardData.socials.facebook}`,
+                    'END:VCARD'
+                ].join('\n');
+
+                const encoded = encodeURIComponent(vCardData);
+                const url = `data:text/vcard;charset=utf-8,${encoded}`;
                 
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('target', '_self');
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            };
+
+            if (isAndroid) {
+                // Thử gọi đúng ứng dụng Google Contacts
+                // com.google.android.contacts là package chuẩn trên Pixel/Samsung
                 const intentUrl =
                     `intent:#Intent;` +
                     `action=android.intent.action.INSERT;` +
@@ -276,41 +303,27 @@
                     `S.company=${encodeURIComponent(cardData.company)};` +
                     `S.job_title=${encodeURIComponent(cardData.role)};` +
                     `S.postal=${encodeURIComponent(cardData.address)};` +
-                    `end`; // Kết thúc Intent mà không chỉ định package
+                    `package=com.google.android.contacts;` + // <-- ĐỔI THÀNH GÓI GOOGLE
+                    `end`;
 
-                const link = document.createElement('a');
-                link.href = intentUrl;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                // Gọi Intent
+                window.location.href = intentUrl;
+
+                // FALLBACK: Đặt hẹn giờ, nếu sau 1s mà Intent thất bại (không chuyển app)
+                // thì tự động tải file xuống. Đây là lưới an toàn.
+                setTimeout(() => {
+                    // Kiểm tra xem trang có bị ẩn đi không (nghĩa là đã chuyển app thành công chưa)
+                    if (!document.hidden) {
+                        console.log("Intent failed or user stayed on page. Fallback to download.");
+                        downloadVCard();
+                    }
+                }, 1000);
+                
                 return;
             }
 
-            // iOS / Desktop Fallback
-            const vCardData = [
-                'BEGIN:VCARD', 'VERSION:3.0',
-                `N:${cardData.lastName};${cardData.firstName};;;`,
-                `FN:${cardData.firstName} ${cardData.lastName}`,
-                `ORG:${cardData.company}`,
-                `TITLE:${cardData.role}`,
-                `TEL;TYPE=CELL:${cardData.phone}`,
-                `EMAIL;TYPE=WORK,INTERNET:${cardData.email}`,
-                `URL:${cardData.website}`,
-                `ADR;TYPE=WORK:;;${cardData.address}`,
-                `X-SOCIALPROFILE;type=linkedin:${cardData.socials.linkedin}`,
-                `X-SOCIALPROFILE;type=facebook:${cardData.socials.facebook}`,
-                'END:VCARD'
-            ].join('\n');
-
-            const encoded = encodeURIComponent(vCardData);
-            const url = `data:text/vcard;charset=utf-8,${encoded}`;
-            
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('target', '_self');
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            // iOS / Desktop: Gọi hàm download luôn
+            downloadVCard();
         }
     </script>
 </body>
