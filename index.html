@@ -255,22 +255,19 @@
             document.getElementById('cardInner').classList.toggle('is-flipped');
         }
 
-        // --- HÀM LƯU CONTACT: DIRECT PACKAGE INTENT (CÁCH BẠN CUNG CẤP) ---
+        // --- HÀM LƯU CONTACT: PACKAGE SPECIFIC + SILENT ---
         function saveContact(event) {
             event.stopPropagation();
             
-            // 1. Kiểm tra Android
             const isAndroid = /Android/i.test(navigator.userAgent);
             const fullName = `${cardData.firstName} ${cardData.lastName}`;
 
             if (isAndroid) {
-                // ALERT DEBUG (Có thể xóa sau khi test ok)
-                alert("Android Detect: Sử dụng 'com.android.contacts' Package Intent...");
-
-                // INTENT URL THEO ĐÚNG MẪU BẠN GỬI
-                // Thêm 'package=com.android.contacts;' để ép mở app danh bạ chuẩn
+                // ĐÂY LÀ PHIÊN BẢN CÓ CHỈ ĐỊNH PACKAGE (com.android.contacts)
+                // Nhưng đã KHÔNG CÒN ALERT để đảm bảo User Gesture
+                
                 const intentUrl =
-                    `intent://addcontact#Intent;` +
+                    `intent:#Intent;` +
                     `action=android.intent.action.INSERT;` +
                     `type=vnd.android.cursor.dir/contact;` +
                     `S.name=${encodeURIComponent(fullName)};` +
@@ -279,17 +276,18 @@
                     `S.company=${encodeURIComponent(cardData.company)};` +
                     `S.job_title=${encodeURIComponent(cardData.role)};` +
                     `S.postal=${encodeURIComponent(cardData.address)};` +
-                    `package=com.android.contacts;` + 
+                    `package=com.android.contacts;` + // <-- Đã thêm lại dòng này theo giả thuyết của bạn
                     `end`;
 
-                // Sử dụng window.location.href như yêu cầu
-                window.location.href = intentUrl;
+                const link = document.createElement('a');
+                link.href = intentUrl;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
                 return;
             }
 
-            // 2. IOS / DESKTOP FALLBACK (Giữ nguyên logic Data vCard đang tốt)
-            alert("Không phải Android: Dùng phương pháp Data VCard.");
-
+            // iOS / Desktop Fallback
             const vCardData = [
                 'BEGIN:VCARD', 'VERSION:3.0',
                 `N:${cardData.lastName};${cardData.firstName};;;`,
