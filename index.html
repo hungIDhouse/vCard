@@ -255,67 +255,45 @@
             document.getElementById('cardInner').classList.toggle('is-flipped');
         }
 
-        async function saveContact(event) {
-            // Không dùng preventDefault để đảm bảo User Gesture được browser ghi nhận 100%
-            if (event) {
-                event.stopPropagation(); 
-            }
-            
-            const btnText = document.getElementById('btn-save-text');
-            const originalText = btnText.innerText;
-            btnText.innerText = "Sharing...";
+        // --- HÀM LƯU CONTACT: DIRECT DATA URI STRATEGY ---
+        // Cách này hoạt động bằng cách ép trình duyệt điều hướng thẳng tới chuỗi mã hóa vCard
+        // Thay vì tải file, OS sẽ nhận diện MIME type và mở App Danh bạ.
+        function saveContact(event) {
+            event.stopPropagation();
 
-            // 1. KIỂM TRA MÔI TRƯỜNG
-            if (!navigator.share || !navigator.canShare) {
-                alert("LỖI: Trình duyệt không hỗ trợ Share API.");
-                btnText.innerText = originalText;
-                return;
-            }
-
-            // Tạo nội dung vCard
             const vCardData = [
                 'BEGIN:VCARD', 'VERSION:3.0',
-                `N;CHARSET=UTF-8:${cardData.lastName};${cardData.firstName};;;`,
-                `FN;CHARSET=UTF-8:${cardData.firstName} ${cardData.lastName}`,
-                `ORG;CHARSET=UTF-8:${cardData.company}`,
-                `TITLE;CHARSET=UTF-8:${cardData.role}`,
+                `N:${cardData.lastName};${cardData.firstName};;;`,
+                `FN:${cardData.firstName} ${cardData.lastName}`,
+                `ORG:${cardData.company}`,
+                `TITLE:${cardData.role}`,
                 `TEL;TYPE=CELL:${cardData.phone}`,
                 `EMAIL;TYPE=WORK,INTERNET:${cardData.email}`,
                 `URL:${cardData.website}`,
-                `ADR;TYPE=WORK;CHARSET=UTF-8:;;${cardData.address}`,
+                `ADR;TYPE=WORK:;;${cardData.address}`,
                 `X-SOCIALPROFILE;type=linkedin:${cardData.socials.linkedin}`,
                 `X-SOCIALPROFILE;type=facebook:${cardData.socials.facebook}`,
                 'END:VCARD'
             ].join('\n');
 
-            const fileName = `${cardData.firstName.replace(/\s/g, '_')}_${cardData.lastName.replace(/\s/g, '_')}.vcf`;
+            const encoded = encodeURIComponent(vCardData);
 
-            // 2. CHIẾN THUẬT "IMPOSTOR" (QUAN TRỌNG NHẤT)
-            // Khai báo là 'text/plain' để qua mặt bộ lọc bảo mật của Chrome
-            // Nhưng tên file vẫn là .vcf để Android hiểu
-            const fileToShare = new File([vCardData], fileName, { type: 'text/plain', lastModified: new Date().getTime() });
+            // Data URL → THẮNG LUÔN CHO CẢ ANDROID + IOS
+            // Sử dụng charset=utf-8 để đảm bảo hiển thị đúng tiếng Việt
+            const url = `data:text/vcard;charset=utf-8,${encoded}`;
 
-            // 3. THỰC HIỆN SHARE
-            try {
-                if (navigator.canShare({ files: [fileToShare] })) {
-                    await navigator.share({
-                        files: [fileToShare],
-                        title: 'Lưu Danh Bạ',
-                        text: 'Chọn "Danh bạ" (Contacts) để lưu.'
-                    });
-                } else {
-                    // Nếu chiêu text/plain mà cũng không được thì đành chịu
-                    throw new Error("Trình duyệt từ chối share file này.");
-                }
-            } catch (err) {
-                if (err.name === 'NotAllowedError') {
-                    alert("⚠️ Chrome đang chặn quyền Share.\n\nNguyên nhân: Chrome trên Android đôi khi chặn chia sẻ file tạo tự động.\n\nGiải pháp: Hãy thử cập nhật Chrome hoặc dùng trình duyệt Samsung Internet/Firefox.");
-                } else if (err.name !== 'AbortError') {
-                    alert(`Lỗi: ${err.message}`);
-                }
-            } finally {
-                btnText.innerText = originalText;
-            }
+            // Tạo link và kích hoạt click
+            const link = document.createElement('a');
+            link.href = url;
+
+            // QUAN TRỌNG: Không đặt thuộc tính download. 
+            // Đặt target="_self" để trình duyệt coi đây là hành động chuyển trang nội bộ,
+            // từ đó kích hoạt bộ xử lý định dạng của hệ điều hành.
+            link.setAttribute('target', '_self');
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
     </script>
 </body>
