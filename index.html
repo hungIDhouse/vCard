@@ -176,9 +176,9 @@
                     
                     <!-- Nút Save Contact -->
                     <div class="flex flex-col items-end">
-                        <button onclick="saveContact(event)" class="bg-gray-900 text-white px-3 py-1.5 rounded text-[10px] font-medium flex items-center space-x-1.5 hover:bg-black transition-colors shadow-lg active:scale-95 transform">
+                        <button id="btn-save" onclick="saveContact(event)" class="bg-gray-900 text-white px-3 py-1.5 rounded text-[10px] font-medium flex items-center space-x-1.5 hover:bg-black transition-colors shadow-lg active:scale-95 transform">
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                            <span>Save Contact</span>
+                            <span id="btn-save-text">Save Contact</span>
                         </button>
                     </div>
                 </div>
@@ -256,16 +256,19 @@
         }
 
         async function saveContact(event) {
-            event.stopPropagation();
-            
-            // 1. KIỂM TRA MÔI TRƯỜNG CƠ BẢN
-            if (!window.isSecureContext) {
-                alert("LỖI MÔI TRƯỜNG: Trang web không chạy trên HTTPS hoặc localhost. Tính năng Share bị trình duyệt khóa.");
-                return;
+            // Không dùng preventDefault để đảm bảo User Gesture được browser ghi nhận 100%
+            if (event) {
+                event.stopPropagation(); 
             }
+            
+            const btnText = document.getElementById('btn-save-text');
+            const originalText = btnText.innerText;
+            btnText.innerText = "Sharing...";
 
+            // 1. KIỂM TRA MÔI TRƯỜNG
             if (!navigator.share || !navigator.canShare) {
-                alert("LỖI THIẾT BỊ: Trình duyệt này KHÔNG hỗ trợ Web Share API (navigator.share).");
+                alert("LỖI: Trình duyệt không hỗ trợ Share API.");
+                btnText.innerText = originalText;
                 return;
             }
 
@@ -287,55 +290,31 @@
 
             const fileName = `${cardData.firstName.replace(/\s/g, '_')}_${cardData.lastName.replace(/\s/g, '_')}.vcf`;
 
-            // 2. CHIẾN THUẬT DÒ TÌM (PROBE)
-            // Chúng ta sẽ thử từng loại định dạng xem thiết bị chịu cái nào
-            const mimeTypesToTry = [
-                'text/vcard',       // Chuẩn nhất
-                'text/x-vcard',     // Android cũ thường dùng
-                'text/plain'        // Chiêu cuối: Ép kiểu thành văn bản thường (nhưng đuôi vẫn .vcf)
-            ];
-
-            let fileToShare = null;
-            let lastError = "";
-
-            for (const mimeType of mimeTypesToTry) {
-                try {
-                    const tempFile = new File([vCardData], fileName, { type: mimeType });
-                    
-                    // Hỏi trình duyệt: "Mày có cho tao share file này không?"
-                    if (navigator.canShare({ files: [tempFile] })) {
-                        fileToShare = tempFile;
-                        // Nếu muốn biết nó nhận loại nào, bỏ comment dòng dưới:
-                        // alert("Debug: Thiết bị CHẤP NHẬN loại: " + mimeType);
-                        break; // Tìm thấy rồi thì thoát vòng lặp
-                    } else {
-                        // console.log("Thiết bị từ chối loại: " + mimeType);
-                    }
-                } catch (e) {
-                    console.log("Lỗi khi tạo file loại " + mimeType + ": " + e.message);
-                }
-            }
+            // 2. CHIẾN THUẬT "IMPOSTOR" (QUAN TRỌNG NHẤT)
+            // Khai báo là 'text/plain' để qua mặt bộ lọc bảo mật của Chrome
+            // Nhưng tên file vẫn là .vcf để Android hiểu
+            const fileToShare = new File([vCardData], fileName, { type: 'text/plain', lastModified: new Date().getTime() });
 
             // 3. THỰC HIỆN SHARE
-            if (fileToShare) {
-                try {
+            try {
+                if (navigator.canShare({ files: [fileToShare] })) {
                     await navigator.share({
                         files: [fileToShare],
                         title: 'Lưu Danh Bạ',
-                        text: 'Chọn ứng dụng Danh bạ (Contacts) để lưu.'
+                        text: 'Chọn "Danh bạ" (Contacts) để lưu.'
                     });
-                    // Nếu chạy đến đây là thành công, không cần alert gì cả
-                } catch (err) {
-                    if (err.name === 'AbortError') {
-                        // Người dùng tự bấm hủy, không cần báo lỗi
-                        return;
-                    }
-                    // Báo lỗi chi tiết để debug
-                    alert(`LỖI KHI SHARE: ${err.name} - ${err.message}`);
+                } else {
+                    // Nếu chiêu text/plain mà cũng không được thì đành chịu
+                    throw new Error("Trình duyệt từ chối share file này.");
                 }
-            } else {
-                // Đã thử hết các loại file mà canShare vẫn trả về false
-                alert("LỖI NGHIÊM TRỌNG: Thiết bị của bạn từ chối chia sẻ file .vcf này dưới mọi định dạng (text/vcard, x-vcard, plain). Hãy kiểm tra lại phiên bản Chrome hoặc quyền truy cập.");
+            } catch (err) {
+                if (err.name === 'NotAllowedError') {
+                    alert("⚠️ Chrome đang chặn quyền Share.\n\nNguyên nhân: Chrome trên Android đôi khi chặn chia sẻ file tạo tự động.\n\nGiải pháp: Hãy thử cập nhật Chrome hoặc dùng trình duyệt Samsung Internet/Firefox.");
+                } else if (err.name !== 'AbortError') {
+                    alert(`Lỗi: ${err.message}`);
+                }
+            } finally {
+                btnText.innerText = originalText;
             }
         }
     </script>
