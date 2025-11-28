@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ID COMMUNICATION GROUP</title>
+    <title>Danh Thiếp Kỹ Thuật Số</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -209,11 +209,11 @@
             firstName: "Hùng",
             lastName: "Nguyễn Hữu",
             role: "Software Engineer",
-            company: "ID COMMUNICATION GROUP",
+            company: "ID Creative Solutions",
             phone: "+84 879 332 174",
             email: "hung.nguyen@idhouse.vn",
-            website: "https://idcomgroup.vn/",
-            address: "194 Nguyễn Công Trứ TP.HCM", // Địa chỉ để tìm trên Maps
+            website: "www.id-creative.com",
+            address: "123 Creative Blvd, Design City",
             avatarUrl: "https://ik.imagekit.io/3xpzbwtjm/avatar",
             socials: {
                 linkedin: "https://www.linkedin.com/in/your-profile",
@@ -221,6 +221,7 @@
                 instagram: "https://www.instagram.com/your-profile"
             }
         };
+
         document.addEventListener('DOMContentLoaded', () => {
             const fullName = `${cardData.firstName} ${cardData.lastName}`;
             const avatarSrc = cardData.avatarUrl ? cardData.avatarUrl : `https://ui-avatars.com/api/?name=${fullName.replace(' ', '+')}&background=f3f4f6&color=333&size=128&bold=true`;
@@ -254,11 +255,10 @@
             document.getElementById('cardInner').classList.toggle('is-flipped');
         }
 
-        // --- HÀM LƯU CONTACT ĐÃ NÂNG CẤP CHO IPHONE ---
         async function saveContact(event) {
             event.stopPropagation();
             
-            // 1. Tạo nội dung vCard
+            // Nội dung vCard
             const vCardData = [
                 'BEGIN:VCARD', 'VERSION:3.0',
                 `N;CHARSET=UTF-8:${cardData.lastName};${cardData.firstName};;;`,
@@ -275,28 +275,50 @@
             ].join('\n');
 
             const fileName = `${cardData.firstName.replace(/\s/g, '_')}_${cardData.lastName.replace(/\s/g, '_')}.vcf`;
-            
-            // 2. Kiểm tra xem trình duyệt có hỗ trợ Chia sẻ file không (Mobile thường có)
-            if (navigator.share && navigator.canShare) {
+
+            // Kiểm tra HTTPS
+            if (!window.isSecureContext) {
+                console.warn("Cảnh báo: Share API cần HTTPS.");
+            }
+
+            // LOGIC CHIA SẺ NÂNG CẤP (Thử nhiều kiểu MIME)
+            if (navigator.share && navigator.canShare && window.isSecureContext) {
                 try {
-                    // Tạo file ảo
-                    const file = new File([vCardData], fileName, { type: 'text/vcard' });
+                    // 1. Thử text/x-vcard (Phổ biến Android)
+                    let file = new File([vCardData], fileName, { type: 'text/x-vcard' });
                     
-                    // Kiểm tra xem thiết bị cho phép chia sẻ file này không
+                    if (!navigator.canShare({ files: [file] })) {
+                        // 2. Thử text/vcard (Chuẩn mới)
+                        file = new File([vCardData], fileName, { type: 'text/vcard' });
+                    }
+
+                    if (!navigator.canShare({ files: [file] })) {
+                        // 3. CHIÊU CUỐI: Thử text/plain (Mẹo để lừa Android mở Share Sheet)
+                        // Vẫn giữ đuôi .vcf nhưng khai báo là text thường
+                        file = new File([vCardData], fileName, { type: 'text/plain' });
+                    }
+
                     if (navigator.canShare({ files: [file] })) {
                         await navigator.share({
                             files: [file],
                             title: 'Lưu Danh Bạ',
-                            text: 'Chọn "Danh bạ" (Contacts) để lưu ngay.',
+                            text: 'Chọn "Danh bạ" hoặc "Contacts" để lưu.'
                         });
-                        return; // Nếu chia sẻ thành công thì dừng ở đây
+                        return; // Thành công
+                    } else {
+                        // Bật cái này lên để xem tại sao nó từ chối (bạn có thể xóa sau khi test)
+                        // alert("Debug: Thiết bị từ chối chia sẻ file .vcf này. Đang chuyển sang tải về.");
+                        console.log("Device refused to share this file type.");
                     }
                 } catch (err) {
-                    console.log('Chia sẻ thất bại hoặc bị hủy, chuyển sang tải file thường.', err);
+                    if (err.name !== 'AbortError') {
+                        // alert("Debug Error: " + err.message);
+                    }
                 }
             }
 
-            // 3. FALLBACK: Nếu là máy tính hoặc thiết bị không hỗ trợ share file
+            // FALLBACK: TẢI FILE TRUYỀN THỐNG
+            // Nếu Android vẫn không chịu chia sẻ, thì tải file là cách duy nhất
             const blob = new Blob([vCardData], { type: 'text/vcard;charset=utf-8' });
             const link = document.createElement('a');
             link.href = window.URL.createObjectURL(blob);
@@ -304,12 +326,6 @@
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            
-            // Nhắc nhở người dùng iOS nếu fallback xảy ra
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-            if (isIOS) {
-                alert("File đã được tải về. Hãy mở ứng dụng 'Tệp' (Files) và bấm vào file vừa tải để lưu vào danh bạ.");
-            }
         }
     </script>
 </body>
