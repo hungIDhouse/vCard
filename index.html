@@ -255,7 +255,7 @@
             document.getElementById('cardInner').classList.toggle('is-flipped');
         }
 
-        // --- HÀM LƯU CONTACT: PACKAGE SPECIFIC + SILENT ---
+        // --- HÀM LƯU CONTACT: UNIVERSAL SILENT INTENT (FIX PLAY STORE BUG) ---
         function saveContact(event) {
             event.stopPropagation();
             
@@ -263,8 +263,8 @@
             const fullName = `${cardData.firstName} ${cardData.lastName}`;
 
             if (isAndroid) {
-                // ĐÂY LÀ PHIÊN BẢN CÓ CHỈ ĐỊNH PACKAGE (com.android.contacts)
-                // Nhưng đã KHÔNG CÒN ALERT để đảm bảo User Gesture
+                // UNIVERSAL INTENT: KHÔNG dùng package để tránh lỗi "Not Found" trên Pixel/Samsung
+                // KHÔNG dùng Alert để đảm bảo User Gesture
                 
                 const intentUrl =
                     `intent:#Intent;` +
@@ -276,8 +276,7 @@
                     `S.company=${encodeURIComponent(cardData.company)};` +
                     `S.job_title=${encodeURIComponent(cardData.role)};` +
                     `S.postal=${encodeURIComponent(cardData.address)};` +
-                    `package=com.android.contacts;` + // <-- Đã thêm lại dòng này theo giả thuyết của bạn
-                    `end`;
+                    `end`; // Kết thúc Intent mà không chỉ định package
 
                 const link = document.createElement('a');
                 link.href = intentUrl;
