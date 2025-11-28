@@ -255,22 +255,20 @@
             document.getElementById('cardInner').classList.toggle('is-flipped');
         }
 
-        // --- HÀM LƯU CONTACT: CHIẾN THUẬT HYBRID ---
         function saveContact(event) {
             event.stopPropagation();
             
-            // 1. Kiểm tra nếu là Android
             const isAndroid = /Android/i.test(navigator.userAgent);
 
             if (isAndroid) {
-                // CHIẾN THUẬT CHO ANDROID: Dùng Intent Scheme
-                // Cách này mở thẳng giao diện "Thêm liên hệ" của Android mà không cần tải file.
-                
+                // ALERT DEBUG ĐỂ BIẾT NÓ CHẠY VÀO ĐÂY
+                alert("Đã phát hiện thiết bị Android. Đang cố mở ứng dụng Danh bạ...");
+
                 const fullName = `${cardData.firstName} ${cardData.lastName}`;
                 
-                // Xây dựng Intent URL
-                // S.xxx là các String Extra để điền sẵn thông tin vào form
-                const intentUrl = `intent://addcontact#Intent;` +
+                // CÚ PHÁP INTENT CHUẨN HƠN (Bỏ phần //addcontact có thể gây lỗi)
+                // Cấu trúc chuẩn: intent:#Intent;action=...;end
+                const intentUrl = `intent:#Intent;` + 
                     `action=android.intent.action.INSERT;` +
                     `type=vnd.android.cursor.dir/contact;` +
                     `S.name=${encodeURIComponent(fullName)};` +
@@ -281,13 +279,13 @@
                     `S.postal=${encodeURIComponent(cardData.address)};` +
                     `end`;
 
-                // Mở Intent
                 window.location.href = intentUrl;
                 return;
             }
 
-            // 2. CHIẾN THUẬT CHO IOS / DESKTOP (Vẫn dùng Data URI như cũ)
-            // iOS thường xử lý tốt data:text/vcard
+            // iOS / Desktop Fallback
+            alert("Phát hiện thiết bị không phải Android (iOS/PC). Dùng phương pháp Data VCard.");
+            
             const vCardData = [
                 'BEGIN:VCARD', 'VERSION:3.0',
                 `N:${cardData.lastName};${cardData.firstName};;;`,
