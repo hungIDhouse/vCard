@@ -268,7 +268,8 @@
                 
                 // CÚ PHÁP INTENT CHUẨN HƠN (Bỏ phần //addcontact có thể gây lỗi)
                 // Cấu trúc chuẩn: intent:#Intent;action=...;end
-                const intentUrl = `intent:#Intent;` + 
+                const intentUrl =
+                    `intent://addcontact#Intent;` +
                     `action=android.intent.action.INSERT;` +
                     `type=vnd.android.cursor.dir/contact;` +
                     `S.name=${encodeURIComponent(fullName)};` +
@@ -277,7 +278,9 @@
                     `S.company=${encodeURIComponent(cardData.company)};` +
                     `S.job_title=${encodeURIComponent(cardData.role)};` +
                     `S.postal=${encodeURIComponent(cardData.address)};` +
+                    `package=com.android.contacts;` +   // <— QUAN TRỌNG
                     `end`;
+
 
                 window.location.href = intentUrl;
                 return;
